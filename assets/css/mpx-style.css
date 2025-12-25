@@ -1,0 +1,578 @@
+/* MPX Global Shipping Calculator - World-Class Design */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #1a365d;
+    --secondary-color: #2d3748;
+    --accent-color: #00d4aa;
+    --error-color: #e53e3e;
+    --success-color: #38a169;
+    --background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --border-radius: 16px;
+    --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background);
+    margin: 0;
+    padding: 0;
+}
+
+.mpx-calculator {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.mpx-calculator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+}
+
+.mpx-form {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.mpx-form .mpx-field:nth-child(1),
+.mpx-form .mpx-field:nth-child(2),
+.mpx-form .mpx-field:nth-child(3),
+.mpx-form .mpx-field:nth-child(4),
+.mpx-form .mpx-field:nth-child(5) {
+    grid-column: span 1;
+}
+
+.mpx-form .mpx-field:nth-child(6) {
+    grid-column: span 2;
+}
+
+.mpx-field {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.mpx-field label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+}
+
+.mpx-field label::before {
+    content: '📦';
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.mpx-field label[for="mpx-origin"]::before {
+    content: '🌍';
+}
+
+.mpx-field label[for="mpx-mode"]::before {
+    content: '✈️';
+}
+
+.mpx-field label[for="mpx-category"]::before {
+    content: '📦';
+}
+
+.mpx-field label[for="mpx-weight"]::before {
+    content: '⚖️';
+}
+
+.mpx-field label[for="mpx-quantity"]::before {
+    content: '🔢';
+}
+
+.toggle-label::before {
+    content: '📏';
+    margin-right: 0.5rem;
+}
+
+.mpx-field input,
+.mpx-field select {
+    padding: 0.875rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: #fff;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+.mpx-field select {
+    cursor: pointer;
+}
+
+.mpx-field input:focus,
+.mpx-field select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+    transform: translateY(-1px);
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+}
+
+.toggle-label input {
+    margin-right: 0.75rem;
+    accent-color: var(--accent-color);
+}
+
+.mpx-btn {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px 0 rgba(26, 54, 93, 0.3);
+    grid-column: span 2;
+    justify-self: center;
+    min-width: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mpx-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.mpx-btn:hover::before {
+    left: 100%;
+}
+
+.mpx-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px 0 rgba(26, 54, 93, 0.4);
+}
+
+.mpx-btn:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.mpx-btn:disabled::before {
+    display: none;
+}
+
+.mpx-btn .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+.mpx-btn:disabled .spinner {
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.mpx-reset-btn {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    color: var(--secondary-color);
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    margin-left: 1rem;
+}
+
+.mpx-reset-btn:hover {
+    background: var(--secondary-color);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.mpx-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.mpx-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--secondary-color);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.mpx-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.mpx-print-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    margin-left: 0.5rem;
+}
+
+.mpx-print-btn::before {
+    content: '🖨️';
+    margin-right: 0.25rem;
+}
+
+.mpx-print-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px 0 rgba(66, 153, 225, 0.3);
+}
+
+.mpx-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.mpx-header h2 {
+    color: var(--primary-color);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.mpx-header p {
+    color: var(--secondary-color);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 400;
+}
+
+.mpx-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    color: #718096;
+    font-size: 0.875rem;
+}
+
+.mpx-footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.mpx-footer a:hover {
+    text-decoration: underline;
+}
+
+.mpx-result {
+    margin-top: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mpx-result-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.mpx-result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--success-color), var(--accent-color));
+}
+
+.mpx-result-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+}
+
+.mpx-result-card h3::after {
+    content: '✅';
+    margin-left: 0.5rem;
+}
+
+.mpx-result-card p {
+    margin: 0.75rem 0;
+    color: var(--secondary-color);
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mpx-result-card p strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.mpx-whatsapp-btn {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px 0 rgba(37, 211, 102, 0.3);
+    margin-top: 1rem;
+}
+
+.mpx-whatsapp-btn::before {
+    content: '📱';
+    margin-right: 0.5rem;
+}
+
+.mpx-whatsapp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px 0 rgba(37, 211, 102, 0.4);
+}
+
+.mpx-error {
+    color: var(--error-color);
+    background: linear-gradient(135deg, #fed7d7, #feb2b2);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--error-color);
+    font-weight: 500;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.mpx-info {
+    color: var(--accent-color);
+    background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-color);
+    font-weight: 500;
+}
+
+.mpx-note {
+    color: var(--error-color);
+    font-weight: 600;
+    background: #fed7d7;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.mpx-disclaimer {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-top: 1.5rem;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mpx-calculator {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .mpx-form {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .mpx-form .mpx-field {
+        grid-column: 1 / -1;
+    }
+
+    .mpx-btn {
+        grid-column: span 1;
+        width: 100%;
+    }
+
+    .mpx-field input,
+    .mpx-field select {
+        font-size: 1rem;
+        padding: 1rem;
+    }
+
+    .mpx-result-card {
+        padding: 1.5rem;
+    }
+
+    .mpx-result-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .mpx-result-card p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .mpx-calculator {
+        padding: 1rem;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+
+    .mpx-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .mpx-btn,
+    .mpx-reset-btn {
+        font-size: 0.875rem;
+        padding: 0.875rem;
+    }
+
+    .mpx-result-card {
+        padding: 1rem;
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .mpx-calculator,
+    .mpx-calculator * {
+        visibility: visible;
+    }
+    .mpx-calculator {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-width: none;
+        box-shadow: none;
+        border: none;
+        background: white;
+    }
+    .mpx-form,
+    .mpx-btn,
+    .mpx-reset-btn,
+    .mpx-tooltip,
+    .mpx-print-btn {
+        display: none !important;
+    }
+    .mpx-result-card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
