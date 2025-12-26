@@ -1,7 +1,8 @@
 <?php
 /**
  * Plugin Name: MPX Global Shipping Calculator
- * Plugin URI: https://mpxglobal.com
+ * Plugin URI: https://mpxglobal.co.zw
+ * Author URI: https://meeknesstapera.co.zw
  * Description: AJAX-driven shipping price and instruction calculator for MPX Global.
  * Version: 1.0.0
  * Author: MPX Global
