@@ -59,11 +59,13 @@ body {
 .mpx-form .mpx-field:nth-child(2),
 .mpx-form .mpx-field:nth-child(3),
 .mpx-form .mpx-field:nth-child(4),
-.mpx-form .mpx-field:nth-child(5) {
+.mpx-form .mpx-field:nth-child(5),
+.mpx-form .mpx-field:nth-child(6),
+.mpx-form .mpx-field:nth-child(7) {
     grid-column: span 1;
 }
 
-.mpx-form .mpx-field:nth-child(6) {
+.mpx-form .mpx-field:nth-child(8) {
     grid-column: span 2;
 }
 
@@ -486,6 +488,7 @@ body {
     .mpx-calculator {
         margin: 1rem;
         padding: 1.5rem;
+        width: auto;
     }
 
     .mpx-form {
@@ -494,18 +497,20 @@ body {
     }
 
     .mpx-form .mpx-field {
-        grid-column: 1 / -1;
+        grid-column: 1 / -1 !important;
     }
 
     .mpx-btn {
         grid-column: span 1;
         width: 100%;
+        min-width: 0;
     }
 
     .mpx-field input,
     .mpx-field select {
         font-size: 1rem;
         padding: 1rem;
+        max-width: 100%;
     }
 
     .mpx-result-card {
@@ -514,12 +519,16 @@ body {
 
     .mpx-result-card h3 {
         font-size: 1.25rem;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
     .mpx-result-card p {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.25rem;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 }
 
@@ -529,10 +538,12 @@ body {
         border-radius: 0;
         margin: 0;
         box-shadow: none;
+        width: 100%;
     }
 
     .mpx-header h2 {
         font-size: 1.4rem;
+        overflow-wrap: break-word;
     }
 
     .mpx-btn,
@@ -543,6 +554,12 @@ body {
 
     .mpx-result-card {
         padding: 1rem;
+    }
+    
+    .mpx-tooltip .tooltip-text {
+        width: 160px;
+        margin-left: -80px;
+        white-space: normal;
     }
 }
 

@@ -21,8 +21,8 @@ class MPX_Calculator {
                 'phones' => 31, // per pc
                 'laptops' => 42, // per pc
                 'transit' => '10–14 Days',
-                'mark' => 'MPX-CHINA-KCGJ',
-                'address' => 'Shenzhen Warehouse, China',
+                'mark' => 'MPX GLOBAL ZW KCGJ + Client Name + MPX Phone Number (+263778866087)',
+                'address' => '开诚国际, 深圳市宝安区福永街道下十围宝海电商物流中心首层104仓, 开诚 18122056912',
             ),
             'china_normal' => array(
                 'normal' => 19,
@@ -30,8 +30,8 @@ class MPX_Calculator {
                 'phones' => 33, // per kg
                 'laptops' => 33, // per kg
                 'transit' => '15–30 Days',
-                'mark' => 'MPX-CHINA-SHA',
-                'address' => 'Shanghai Warehouse, China',
+                'mark' => 'MPX GLOBAL H01473 (Your Name & Phone Number)',
+                'address' => '收件姓名：MPX GLOBAL H01473区, 收货地址：佛山市南海区里水镇大步社区北123号家渡产业园8号银河仓 H01473区, 联系电话：13500029317',
             ),
             'dubai_express' => array(
                 'normal' => 15.50,
@@ -39,7 +39,7 @@ class MPX_Calculator {
                 'phones' => 33, // per pc
                 'transit' => '7–14 Days',
                 'mark' => 'MPX-DUBAI-DXB',
-                'address' => 'Dubai Warehouse, UAE',
+                'address' => 'Alnoor Building 2, Al Nahda 2, Apartment 1102, Dubai',
             ),
             'usa_express' => array(
                 'normal' => 25,
@@ -47,8 +47,8 @@ class MPX_Calculator {
                 'laptops' => 48, // per pc
                 'tvs' => 26, // per pc
                 'transit' => '7–14 Days',
-                'mark' => 'MPX-USA-LAX',
-                'address' => 'Los Angeles Warehouse, USA',
+                'mark' => 'MPX Global ZW',
+                'address' => 'MPX Global ZW / Your Name, 101 Tiger Way, Boonsboro, MD 21713',
             ),
             'uk_duty_incl' => array(
                 'normal' => 12,
@@ -61,8 +61,14 @@ class MPX_Calculator {
             'india_standard' => array(
                 'normal' => 17,
                 'transit' => '7–14 Days',
-                'mark' => 'MPX-INDIA-BOM',
-                'address' => 'Mumbai Warehouse, India',
+                'mark' => 'MPX GLOBALZW',
+                'address' => 'B-11, Gr. Floor, Bldg No. B-2 Shree Devadiga CHS Ltd, Om Nagar, Near Jeena House, J.B. Nagar, Andheri, Mumbai-400099, Maharashtra, India',
+            ),
+            'turkey_standard' => array(
+                'normal' => 15,
+                'transit' => '7–14 Days',
+                'mark' => 'MPX Global ZW',
+                'address' => 'Mimar Kemalettin Mah. Soğanağa Camii Sk., No: 5D Beyazıt – Fatih / İST.',
             ),
         );
 
@@ -71,15 +77,15 @@ class MPX_Calculator {
                 'cbm_rate' => 480,
                 'min_cbm' => 0.1,
                 'transit' => '50–60 Days',
-                'mark' => 'MPX-CHINA-SHA-SEA',
-                'address' => 'Shanghai Port Warehouse, China',
+                'mark' => 'MPX GLOBAL ZW AIMRITE0753 + YOUR NAME + PHONE',
+                'address' => 'No. 101, First Industrial Zone, Xinlong Village, Lecong Town, Shunde District, Foshan (地址： 广东省佛山市顺德区乐从镇新隆村第一工业区内101号) Recipient: 18188802770',
             ),
             'china_express' => array(
                 'cbm_rate' => 600,
                 'min_cbm' => 0.1,
                 'transit' => '45 Days',
-                'mark' => 'MPX-CHINA-KCGJ-SEA',
-                'address' => 'Shenzhen Port Warehouse, China',
+                'mark' => 'MPX GLOBAL ZW EXPRESS AIMRITE0753 + YOUR NAME + PHONE',
+                'address' => '地址： 广东省佛山市顺德区乐从镇新隆村第一工业区内101号, 收件人： 18188802770',
             ),
             'dubai_standard' => array(
                 'message' => 'Rates on Request',
@@ -96,8 +102,7 @@ class MPX_Calculator {
         add_action('wp_ajax_nopriv_calculate_shipping', array($this, 'calculate_shipping'));
         add_action('wp_ajax_generate_pdf', array($this, 'generate_pdf'));
         add_action('wp_ajax_nopriv_generate_pdf', array($this, 'generate_pdf'));
-        add_action('wp_ajax_generate_qr', array($this, 'generate_qr'));
-        add_action('wp_ajax_nopriv_generate_qr', array($this, 'generate_qr'));
+
         add_shortcode('mpx_calculator', array($this, 'render_calculator'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
     }
@@ -124,7 +129,19 @@ class MPX_Calculator {
         }
 
         if (!get_option('mpx_whatsapp')) {
-            update_option('mpx_whatsapp', '+263773061744');
+            update_option('mpx_whatsapp', '+263714294473');
+        }
+
+        // Auto-update WhatsApp if it matches old default
+        if (get_option('mpx_whatsapp') === '+263773061744') {
+             update_option('mpx_whatsapp', '+263714294473');
+        }
+
+        // Auto-update Dubai address if it matches old default
+        $stored_air_rates = get_option('mpx_air_rates');
+        if (is_array($stored_air_rates) && isset($stored_air_rates['dubai_express']['address']) && $stored_air_rates['dubai_express']['address'] === 'Dubai Warehouse, UAE') {
+            $stored_air_rates['dubai_express']['address'] = 'Alnoor Building 2, Al Nahda 2, Apartment 1102, Dubai';
+            update_option('mpx_air_rates', $stored_air_rates);
         }
     }
 
@@ -132,13 +149,12 @@ class MPX_Calculator {
      * Enqueue scripts and styles
      */
     public function enqueue_scripts() {
-        wp_enqueue_style('mpx-calculator-style', plugin_dir_url(__FILE__) . 'assets/css/mpx-style.css', array(), '1.0.0');
-        wp_enqueue_script('mpx-calculator-js', plugin_dir_url(__FILE__) . 'assets/js/calculator.js', array(), '1.0.0', true);
+        wp_enqueue_style('mpx-calculator-style', plugin_dir_url(__FILE__) . 'assets/css/mpx-style.css', array(), '1.0.1');
+        wp_enqueue_script('mpx-calculator-js', plugin_dir_url(__FILE__) . 'assets/js/calculator.js', array(), '1.0.1', true);
         wp_localize_script('mpx-calculator-js', 'mpx_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('mpx_calculate_nonce'),
             'pdf_nonce' => wp_create_nonce('mpx_generate_pdf_nonce'),
-            'qr_nonce' => wp_create_nonce('mpx_generate_qr_nonce'),
         ));
     }
 
@@ -161,8 +177,8 @@ class MPX_Calculator {
      * Admin settings page callback
      */
     public function admin_settings_page() {
-        $air_rates = get_option('mpx_air_rates', $this->default_air_rates);
-        $sea_rates = get_option('mpx_sea_rates', $this->default_sea_rates);
+        $air_rates = array_replace_recursive($this->default_air_rates, (array)get_option('mpx_air_rates', array()));
+        $sea_rates = array_replace_recursive($this->default_sea_rates, (array)get_option('mpx_sea_rates', array()));
         $currency = get_option('mpx_currency', 'USD');
         $uk_currency = get_option('mpx_uk_currency', 'GBP');
         $whatsapp = get_option('mpx_whatsapp', '263714294473');
@@ -259,6 +275,14 @@ class MPX_Calculator {
                     <tr><th>Address</th><td><input type="text" name="air[india_standard][address]" value="<?php echo esc_attr($air_rates['india_standard']['address']); ?>"></td></tr>
                 </table>
 
+                <h3>Turkey Standard</h3>
+                <table class="form-table">
+                    <tr><th>Normal ($/kg)</th><td><input type="number" name="air[turkey_standard][normal]" value="<?php echo esc_attr($air_rates['turkey_standard']['normal']); ?>" step="0.01"></td></tr>
+                    <tr><th>Transit Time</th><td><input type="text" name="air[turkey_standard][transit]" value="<?php echo esc_attr($air_rates['turkey_standard']['transit']); ?>"></td></tr>
+                    <tr><th>Shipping Mark</th><td><input type="text" name="air[turkey_standard][mark]" value="<?php echo esc_attr($air_rates['turkey_standard']['mark']); ?>"></td></tr>
+                    <tr><th>Address</th><td><input type="text" name="air[turkey_standard][address]" value="<?php echo esc_attr($air_rates['turkey_standard']['address']); ?>"></td></tr>
+                </table>
+
                 <h2>Sea Freight Rates</h2>
                 <h3>China Normal Sea</h3>
                 <table class="form-table">
@@ -323,6 +347,14 @@ class MPX_Calculator {
             </div>
             <form id="mpx-calculator-form" class="mpx-form">
                 <div class="mpx-field">
+                    <label for="mpx-client-name">👤 Name</label>
+                    <input type="text" id="mpx-client-name" name="client_name" required placeholder="e.g. John Doe">
+                </div>
+                <div class="mpx-field">
+                    <label for="mpx-client-phone">📱 Phone Number</label>
+                    <input type="text" id="mpx-client-phone" name="client_phone" required placeholder="e.g. 0771234567">
+                </div>
+                <div class="mpx-field">
                     <label for="mpx-origin">
                         🌍 Origin
                         <span class="mpx-tooltip">?
@@ -336,6 +368,7 @@ class MPX_Calculator {
                         <option value="usa">USA</option>
                         <option value="uk">UK</option>
                         <option value="india">India</option>
+                        <option value="turkey">Turkey</option>
                     </select>
                 </div>
 
@@ -426,8 +459,6 @@ class MPX_Calculator {
                 <!-- Result will be populated by JS -->
                 <div id="mpx-result-actions" style="display: none; margin-top: 20px;">
                     <button id="mpx-download-pdf-btn" class="mpx-btn">Download PDF</button>
-                    <button id="mpx-get-qr-btn" class="mpx-btn">Get Quote QR Code</button>
-                    <div id="mpx-qr-code-container" style="margin-top: 10px;"></div>
                 </div>
                 <p class="mpx-export-fee-note" style="display: none; margin-top: 15px; font-style: italic;">There will be an export fee on top of the estimated prices.</p>
             </div>
@@ -450,6 +481,8 @@ class MPX_Calculator {
         //     wp_die('Security check failed');
         // }
 
+        $client_name = isset($_POST['client_name']) ? sanitize_text_field($_POST['client_name']) : '';
+        $client_phone = isset($_POST['client_phone']) ? sanitize_text_field($_POST['client_phone']) : '';
         $origin = sanitize_text_field($_POST['origin']);
         $mode = sanitize_text_field($_POST['mode']);
         $category = sanitize_text_field($_POST['category']);
@@ -462,8 +495,8 @@ class MPX_Calculator {
             $qty = 1;
         }
 
-        $air_rates = $this->default_air_rates;
-        $sea_rates = $this->default_sea_rates;
+        $air_rates = array_replace_recursive($this->default_air_rates, (array)get_option('mpx_air_rates', array()));
+        $sea_rates = array_replace_recursive($this->default_sea_rates, (array)get_option('mpx_sea_rates', array()));
 
         $result = array(
             'success' => false,
@@ -477,7 +510,7 @@ class MPX_Calculator {
             $volume_cbm = ($length * $width * $height) / 1000000;
             $volumetric_weight = ($length * $width * $height) / 6000;
         }
-        $chargeable_weight = max($weight, $volumetric_weight);
+        $chargeable_weight = ceil(max($weight, $volumetric_weight));
 
         $total_cost = 0;
         $currency = get_option('mpx_currency', 'USD');
@@ -549,9 +582,30 @@ class MPX_Calculator {
             }
         }
 
+        // Customize Shipping Mark with Client Details
+        $client_id = sprintf('%03d', rand(0, 999));
+        if (!empty($shipping_mark)) {
+            // First handle specific compound placeholders
+            $shipping_mark = str_ireplace('Your Name & Phone Number', "$client_name $client_phone", $shipping_mark);
+            
+            // Handle Name
+            $shipping_mark = str_ireplace(array('Your Name', 'Client Name', 'YOUR NAME'), $client_name, $shipping_mark);
+            
+            // Handle Phone (avoid breaking 'MPX Phone Number')
+            if (stripos($shipping_mark, 'MPX Phone') === false) {
+                 $shipping_mark = str_ireplace(array('Phone Number', 'PHONE'), $client_phone, $shipping_mark);
+            }
+            
+            // Append Unique Client ID
+            $shipping_mark .= ' #' . $client_id;
+        }
+
         if ($total_cost > 0 || isset($result['message'])) {
             $result = array(
                 'success' => $total_cost > 0,
+                'client_name' => $client_name,
+                'client_phone' => $client_phone,
+                'client_id' => $client_id,
                 'cost' => $total_cost > 0 ? number_format($total_cost, 2) : '',
                 'currency' => $currency,
                 'unit' => $unit,
@@ -611,33 +665,5 @@ class MPX_Calculator {
         wp_die();
     }
 
-    /**
-     * AJAX handler for QR code generation
-     */
-    public function generate_qr() {
-        if (!wp_verify_nonce($_POST['nonce'], 'mpx_generate_qr_nonce')) {
-            wp_die('Security check failed');
-        }
 
-        $params = array(
-            'origin' => sanitize_text_field($_POST['origin']),
-            'mode' => sanitize_text_field($_POST['mode']),
-            'category' => sanitize_text_field($_POST['category']),
-            'weight' => floatval($_POST['weight']),
-        );
-        if (isset($_POST['quantity'])) {
-            $params['quantity'] = intval($_POST['quantity']);
-        }
-        if (isset($_POST['length'])) {
-            $params['length'] = floatval($_POST['length']);
-            $params['width'] = floatval($_POST['width']);
-            $params['height'] = floatval($_POST['height']);
-        }
-
-        $quote_url = add_query_arg($params, get_permalink());
-
-        $qr_code_data = (new \chillerlan\QRCode\QRCode)->render($quote_url);
-
-        wp_send_json_success(array('qr_code' => $qr_code_data));
-    }
 }

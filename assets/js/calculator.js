@@ -23,8 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const resultActions = document.getElementById('mpx-result-actions');
     const downloadPdfBtn = document.getElementById('mpx-download-pdf-btn');
-    const getQrBtn = document.getElementById('mpx-get-qr-btn');
-    const qrCodeContainer = document.getElementById('mpx-qr-code-container');
+
     const exportFeeNote = document.querySelector('.mpx-export-fee-note');
 
     let currentQuoteData = null;
@@ -58,6 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
             modeField.style.display = 'block';
             modeSelect.required = true;
             modeSelect.innerHTML += '<option value="india_standard">Standard Air (7–14 Days)</option>';
+        } else if (origin === 'turkey') {
+            modeField.style.display = 'block';
+            modeSelect.required = true;
+            modeSelect.innerHTML += '<option value="turkey_standard">Standard Air (7–14 Days)</option>';
         } else {
             modeField.style.display = 'none';
             modeSelect.required = false;
@@ -95,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultCardContainer.innerHTML = '<div class="mpx-info">Calculating...</div>';
         resultActions.style.display = 'none';
         exportFeeNote.style.display = 'none';
-        qrCodeContainer.innerHTML = '';
+
 
         const formData = new FormData(form);
         formData.append('action', 'calculate_shipping');
@@ -118,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 let resultHTML = `
                     <div class="mpx-result-card">
                         <h3>Estimated Cost: ${data.currency}${data.cost}</h3>
+                        <p><strong>Client:</strong> ${data.client_name} (${data.client_phone})</p>
                         <p><strong>Chargeable ${data.unit}:</strong> ${unitText}</p>
                         <p><strong>Transit Time:</strong> ${data.transit}</p>
                         <p><strong>Shipping Mark:</strong> ${data.shipping_mark}</p>
@@ -158,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultCardContainer.innerHTML = '';
         resultActions.style.display = 'none';
         exportFeeNote.style.display = 'none';
-        qrCodeContainer.innerHTML = '';
+
         currentQuoteData = null;
         calculateBtn.classList.remove('mpx-loading');
         modeSelect.innerHTML = '<option value="">Select Mode</option>';
@@ -197,49 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.removeChild(tempForm);
     });
 
-    // Get QR Code button
-    getQrBtn.addEventListener('click', function() {
-        // If QR code is already visible, hide it and reset button
-        if (qrCodeContainer.innerHTML) {
-            qrCodeContainer.innerHTML = '';
-            getQrBtn.textContent = 'Get Quote QR Code';
-            return;
-        }
 
-        const formData = new FormData(document.getElementById('mpx-calculator-form'));
-        formData.append('action', 'generate_qr');
-        formData.append('nonce', mpx_ajax.qr_nonce);
-        const currentPageUrl = window.location.href.split('?')[0];
-        formData.append('page_url', currentPageUrl);
-
-        getQrBtn.disabled = true;
-        getQrBtn.classList.add('mpx-loading');
-        getQrBtn.textContent = 'Generating...';
-
-        fetch(mpx_ajax.ajax_url, {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            getQrBtn.disabled = false;
-            getQrBtn.classList.remove('mpx-loading');
-            if (data.success && data.data.qr_code) {
-                qrCodeContainer.innerHTML = `<img src="${data.data.qr_code}" alt="Quote QR Code" />`;
-                getQrBtn.textContent = 'Hide QR Code';
-            } else {
-                qrCodeContainer.innerHTML = '<p class="mpx-error">Could not generate QR code.</p>';
-                getQrBtn.textContent = 'Get Quote QR Code';
-            }
-        })
-        .catch(error => {
-            console.error('QR Code error:', error);
-            qrCodeContainer.innerHTML = '<p class="mpx-error">An error occurred while generating the QR code.</p>';
-            getQrBtn.disabled = false;
-            getQrBtn.classList.remove('mpx-loading');
-            getQrBtn.textContent = 'Get Quote QR Code';
-        });
-    });
 
     function prefillFormFromUrl() {
         const params = new URLSearchParams(window.location.search);
